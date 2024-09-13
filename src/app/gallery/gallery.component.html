@@ -1,64 +1,42 @@
-<div class="w-9/12 mx-auto pt-8 flex flex-col items-center">
+<div class="w-7/12 mx-auto pt-8 flex flex-col items-center">
   <div class="mt-5 mb-5 text-2xl font-medium">
     <h1>Galeria de Imagenes</h1>
   </div>
 
   <!-- filtro y favorito -->
-  <div class="px-1 w-full flex justify-between border-b border-gray-300">
-    <div class="mb-2 flex space-x-7">
-      <h3>Todas</h3>
-      <h3>Naturaleza</h3>
-      <h3>Comida</h3>
-      <h3>Animales</h3>
-      <h3>Carros</h3>
+  <div
+    class="mb-5 px-1 w-full flex justify-between items-center border-b border-gray-300"
+  >
+    <div class="flex space-x-4 mb-5">
+      <label for="category" class="block text-base font-medium"
+        >Filtrar por categoría:</label
+      >
+      <select
+        id="category"
+        [(ngModel)]="selectedCategory"
+        class="border border-gray-300 rounded-md p-1 w-auto text-[11px]"
+      >
+        <option value="">Todas</option>
+        <option *ngFor="let category of categories" [value]="category">
+          {{ category }}
+        </option>
+      </select>
     </div>
-    <svg
-      class="w-4 h-4"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke-width="1.5"
-      stroke="currentColor"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-      />
-    </svg>
-  </div>
-
-  <!-- Imagenes -->
-  <div class="px-1 mt-7 grid grid-cols-4 gap-x-28">
-    <div
-      *ngFor="let imagen of imagenes"
-      class="w-72 h-auto p-2 mb-6 border border-gray-300 rounded"
-    >
-      <div class="overflow-hidden relative rounded-sm">
-        <img
-          [src]="imagen.src"
-          alt="Imagen 1"
-          class="w-full h-full object-cover"
-        />
-      </div>
-      <h4 class="mt-2 text-sm font-medium">Titulo Imagen</h4>
-      <p class="mt-1 text-xs">Esto es una descripcion de la imagen.</p>
-      <div class="mt-3">
-        <button class="w-24 p-1 text-white text-[10px] bg-blue-600 rounded-sm">
-          Mas detalles
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal -->
-  <!-- <div class="w-1/3 h-auto p-2 mb-6 border border-gray-300 rounded bg-gray-50">
-    <div class="px-1 w-full flex justify-between">
-      <h4 class="mt-2 text-lg font-semibold text-blue-600">
-        Titulo Imagen Modal
-      </h4>
+    <button (click)="toggleFavoriteView()">
       <svg
-        class="w-4 h-4 text-gray-400"
+        *ngIf="showFavorites"
+        class="w-5 h-5 text-red-500"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+        />
+      </svg>
+      <svg
+        *ngIf="!showFavorites"
+        class="w-5 h-5 text-red-500"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -68,27 +46,132 @@
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
-          d="M6 18 18 6M6 6l12 12"
+          d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
         />
       </svg>
-    </div>
-    <p class="px-1 mt-1 text-xs">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-      velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-      cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-      est laborum.
-    </p>
-    <div class=" mb-2 flex justify-between">
-      <p class="px-1 mt-4 text-[11px] text-gray-400">autor</p>
-      <p class="px-2 mt-4 text-[11px] text-gray-400">dd/mm/aaaa</p>
-    </div>
-  </div> -->
+    </button>
+  </div>
 
-  <!-- mensaje condicional -->
-  <!-- <div class="mt-6">
-    <p class="text-gray-500 font-light">No tienes imágenes favoritas aún</p>
-  </div> -->
+  <!-- Imagenes -->
+  <div *ngIf="!showFavorites" class="mb-10">
+    <div
+      *ngIf="filteredImages.length > 0; else noImages"
+      class="grid grid-cols-3 gap-4"
+    >
+      <div
+        *ngFor="let image of filteredImages"
+        class="border rounded-lg p-4 shadow"
+      >
+        <img
+          [src]="image.url"
+          [alt]="image.title"
+          class="w-full h-48 object-cover mb-2 cursor-pointer"
+        />
+        <h3 class="text-base font-medium">{{ image.title }}</h3>
+        <p class="mt-2 text-sm text-gray-600">{{ image.description }}</p>
+        <div class="mt-3 flex justify-between">
+          <button
+            (click)="selectImage(image)"
+            class="w-24 h-auto items-center p-1 text-white text-[10px] bg-blue-600 rounded-sm"
+          >
+            Mas detalles
+          </button>
+          <button (click)="toggleFavorite(image)">
+            <svg
+              *ngIf="image.isFavorite"
+              class="w-4 h-4 text-red-500"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              />
+            </svg>
+
+            <svg
+              *ngIf="!image.isFavorite"
+              class="w-4 h-4 text-red-500"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div
+    *ngIf="selectedImage"
+    class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center"
+  >
+    <div class="bg-white rounded-lg max-w-lg w-full">
+      <button class="float-right text-red-400 p-2" (click)="closeDetails()">
+        <svg
+          class="h-5 w-5"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18 18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+      <div class="p-6">
+        <h2 class="text-2xl font-bold">{{ selectedImage.title }}</h2>
+        <img [src]="selectedImage.url" class="w-full h-64 object-cover mt-4" />
+        <p class="mt-2">{{ selectedImage.longDescription }}</p>
+        <div class="mt-4 flex justify-between text-xs text-gray-600">
+          <p>{{ selectedImage.author }}</p>
+          <p>{{ selectedImage.date }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de imágenes favoritas -->
+  <div *ngIf="showFavorites" class="my-6">
+    <h2 class="text-2xl font-bold text-center">Imágenes favoritas</h2>
+    <div
+      *ngIf="favorites.length > 0; else noFavorites"
+      class="grid grid-cols-3 gap-4"
+    >
+      <div
+        *ngFor="let favorite of favorites"
+        class="border rounded-lg p-4 shadow"
+      >
+        <img
+          [src]="favorite.url"
+          [alt]="favorite.title"
+          class="w-full h-48 object-cover mb-2 cursor-pointer"
+        />
+        <h3 class="text-base font-medium">{{ favorite.title }}</h3>
+        <p class="text-sm text-gray-600">{{ favorite.description }}</p>
+      </div>
+    </div>
+    <!-- Mensaje condicional favoritos -->
+    <ng-template #noFavorites>
+      <p class="text-center text-gray-500">No tienes imágenes favoritas aún.</p>
+    </ng-template>
+  </div>
+
+  <!-- mensaje condicional imagenes -->
+  <ng-template #noImages>
+    <p class="text-center text-gray-500">No hay imágenes disponibles.</p>
+  </ng-template>
 </div>
