@@ -17,7 +17,7 @@ interface Image {
   styleUrls: ['./gallery.component.css'],
 })
 export class GalleryComponent {
-  categories: string[] = ['Naturaleza', 'Animales', 'Comida'];
+  categories: string[] = ['Naturaleza', 'Animales', 'Comida', 'Tecnologia'];
   selectedCategory: string = '';
   selectedImage: Image | null = null;
   showFavorites: boolean = false;
